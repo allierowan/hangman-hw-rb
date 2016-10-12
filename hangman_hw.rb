@@ -3,11 +3,17 @@
 # array of possible words that we can play with
 hangman_words = ["the iron yard"]
 game_mode = "easy"
+all_guesses = []
+#game_word = rand_item(hangman_words)
 
-# how many unique characters in a string
-def unique_chars(word)
-  no_spaces = word.sub(" ", "")
-  char_array = no_spaces.downcase.chars.to_a.uniq
+# puts all characters (except the space) of a word into an array
+def mk_string_array(word)
+  return (word.gsub(" ", "")).chars.to_a
+end
+
+# how many unique characters in a string, ignoring spaces
+def num_unique_chars(word)
+  char_array = (mk_string_array(word.downcase)).uniq
   char_array.length
 end
 
@@ -44,20 +50,19 @@ def put_game_board(game_word)
   puts word_string
 end
 
-#check word for a character and return array with all indexes of where that character shows up
-def check_word_for_char(game_word, guess_char)
-  char_array = game_word.sub(" ", "").char.to_a
-  array_of_locations = []
-  char_array.each do |char|
-    if char == guess_char
-      array_of_locations.push(char_array.index(char))
+# update the game board based on a guess
+def update_game_board(game_word, guess_char_array)
+  new_board = ""
+  game_word_array = game_word.chars.to_a
+  game_word_array.each do |char|
+    p char
+    if guess_char_array.index(char.downcase)
+      new_board += char + " "
+    elsif char == " "
+      new_board += "  "
+    else
+      new_board += "_ "
     end
   end
-  return array_of_locations
-end
-# update the game board based on a guess
-def update_game_board(game_word, locs_array)
-  new_string = ""
-
-
+  puts new_board
 end
