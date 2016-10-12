@@ -52,7 +52,7 @@ def did_you_win?(game_word, guess_char_array)
   return game_word_array&guess_char_array.uniq == game_word_array
 end
 
-# evaluate a guess as right, wrong, already guessed, or invalid
+# evaluate a guess as right, wrong, already guessed, invalid, solved, or asking for a hint
 def check_guess(game_word, guess_char, already_guessed)
   game_word_array = mk_string_array(game_word.downcase).uniq
   result = ""
@@ -63,6 +63,8 @@ def check_guess(game_word, guess_char, already_guessed)
     result = "char found"
   elsif guess_char == "exit"
     result = "exit"
+  elsif guess_char == "get a hint"
+    result = "hint"
   elsif guess_char.start_with?("solve")
     solve_array = guess_char.split(" ")
     solve_array.shift
@@ -78,11 +80,16 @@ def check_guess(game_word, guess_char, already_guessed)
     result = "char not found"
   end
 end
-
+file_words = File.readlines("/usr/share/dict/words")
+hangman_words = []
+file_words.each do |word|
+  if word[0].upcase != word[0]
+    hangman_words.push(word.chomp)
+  end
+end
 # gets a guess from the user and adds it to the guess_array
 play_again = true
 until play_again == false
-  hangman_words = ["Hello"]
   all_guesses = []
   game_word = rand_item(hangman_words)
   mode_options = ["easy", "medium", "hard"]
@@ -99,6 +106,7 @@ until play_again == false
   puts "If you need a hint as to which of the 26 letters you should guess, please type 'get a hint'"
   update_game_board(game_word, [])
   over = false
+  num_hints = 4
   until remaining_guesses == 0 || over == true
     guess_character = (gets.chomp).downcase
     case check_guess(game_word, guess_character, all_guesses)
@@ -124,6 +132,15 @@ until play_again == false
       else
         puts "Nope, guess again bozo."
         puts "You have #{remaining_guesses} guesses remaining. So far, you have guessed #{all_guesses}"
+      end
+    when "hint"
+      unguessed_chars = mk_string_array(game_word.downcase).uniq - all_guesses
+      hint = rand_item(unguessed_chars)
+      num_hints -= 1
+      if num_hints == 0
+        puts "Sorry, Charlie. No more hints"
+      else
+        puts "If you must. Try #{hint}. You have #{num_hints-1} hints remaining"
       end
     when "exit"
       over = true
