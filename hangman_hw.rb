@@ -31,9 +31,9 @@ def rand_item(array)
 end
 
 # output the game board
-def put_game_board(random_word)
+def put_game_board(game_word)
   word_string = ""
-  char_array = random_word.chars.to_a
+  char_array = game_word.chars.to_a
   char_array.each do |char|
     if char == " "
       word_string += "  "
@@ -42,4 +42,22 @@ def put_game_board(random_word)
     end
   end
   puts word_string
+end
+
+#check word for a character and return array with all indexes of where that character shows up
+def check_word_for_char(game_word, guess_char)
+  char_array = game_word.sub(" ", "").char.to_a
+  array_of_locations = []
+  char_array.each do |char|
+    if char == guess_char
+      array_of_locations.push(char_array.index(char))
+    end
+  end
+  return array_of_locations
+end
+# update the game board based on a guess
+def update_game_board(game_word, locs_array)
+  new_string = ""
+
+
 end
