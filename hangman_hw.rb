@@ -23,3 +23,23 @@ def how_many_guesses(word, mode = "easy")
   end
   return num_guesses
 end
+
+# pick a random item from an array
+def rand_item(array)
+  rand_index = rand(array.length)
+  return array[rand_index]
+end
+
+# output the game board
+def put_game_board(random_word)
+  word_string = ""
+  char_array = random_word.chars.to_a
+  char_array.each do |char|
+    if char == " "
+      word_string += "  "
+    else
+      word_string += "_ "
+    end
+  end
+  puts word_string
+end
