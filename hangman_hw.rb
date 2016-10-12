@@ -52,20 +52,84 @@ def did_you_win?(game_word, guess_char_array)
   return game_word_array&guess_char_array.uniq == game_word_array
 end
 
-# gets a guess from the user and adds it to the guess_array
-hangman_words = ["the iron yard"]
-game_mode = "easy"
-all_guesses = []
-game_word = rand_item(hangman_words)
-remaining_guesses = how_many_guesses(game_word, game_mode)
-puts "Welcome to Hangman! Please guess a valid character"
-update_game_board(game_word, [])
-won = false
+# evaluate a guess as right, wrong, already guessed, or invalid
+def check_guess(game_word, guess_char, already_guessed)
+  game_word_array = mk_string_array(game_word.downcase).uniq
+  result = ""
+  valid_chars = ("a".."z").to_a+("A".."Z").to_a
+  if already_guessed.include?(guess_char)
+    result = "already guessed"
+  elsif game_word_array.include?(guess_char)
+    result = "char found"
+  elsif guess_char == "exit"
+    result = "exit"
+  elsif !valid_chars.include?(guess_char)
+    result = "invalid char"
+  else
+    result = "char not found"
+  end
+end
 
-until remaining_guesses == 0 || won == true
-  guess_character = (gets.chomp).downcase
-  all_guesses << guess_character
-  update_game_board(game_word, all_guesses)
-  remaining_guesses -= 1
-  won = did_you_win?(game_word, all_guesses)
+# gets a guess from the user and adds it to the guess_array
+play_again = true
+until play_again == false
+  hangman_words = ["Hello"]
+  all_guesses = []
+  game_word = rand_item(hangman_words)
+  mode_options = ["easy", "medium", "hard"]
+  puts "Welcome to Hangman!"
+  puts "What mode would you like to play in? Easy, Medium, or Hard?"
+  game_mode = gets.chomp.downcase
+  if !mode_options.include?(game_mode)
+    game_mode = rand_item(mode_options)
+    puts "Fine, I'll pick for you. You're playing in #{game_mode} mode."
+  end
+  remaining_guesses = how_many_guesses(game_word, game_mode)
+  puts "Since this is #{game_mode} mode, you get #{remaining_guesses} guesses. Please guess a valid character, or type exit to leave"
+  update_game_board(game_word, [])
+  over = false
+  until remaining_guesses == 0 || over == true
+    guess_character = (gets.chomp).downcase
+    case check_guess(game_word, guess_character, all_guesses)
+    when "already guessed"
+      puts "Way to go, you already guessed #{guess_character}."
+      puts "You have #{remaining_guesses} guesses remaining. So far, you have guessed #{all_guesses}"
+    when "char found"
+      all_guesses << guess_character
+      if did_you_win?(game_word, all_guesses)
+        over = true
+        puts "#{game_word}"
+        puts "Good job, you won this game, which is for children."
+      else
+        puts "Only 26 letters in the alphabet, you were bound to guess correctly sometime."
+        puts "You have #{remaining_guesses} guesses remaining. So far, you have guessed #{all_guesses}"
+      end
+    when "char not found"
+      remaining_guesses -= 1
+      all_guesses << guess_character
+      if remaining_guesses == 0
+        over = true
+        puts "Welp, you lost a children's game. The word was #{game_word}."
+      else
+        puts "Nope, guess again bozo."
+        puts "You have #{remaining_guesses} guesses remaining. So far, you have guessed #{all_guesses}"
+      end
+    when "exit"
+      over = true
+      puts "Cool, see ya later bro."
+    when "invalid char"
+      puts "#{guess_character} is not a character. Be grateful I don't take away one of your #{remaining_guesses} guesses for that b.s."
+      puts "So far, you have guessed #{all_guesses}"
+    end
+    if over == false
+      update_game_board(game_word, all_guesses)
+    end
+  end
+  puts "Would you like to play again? If so, respond with 'Y'"
+  user_response = gets.chomp.downcase
+  if user_response == "y"
+    play_again = true
+  else
+    play_again = false
+  end
 end
