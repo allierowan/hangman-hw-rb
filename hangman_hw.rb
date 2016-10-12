@@ -63,6 +63,15 @@ def check_guess(game_word, guess_char, already_guessed)
     result = "char found"
   elsif guess_char == "exit"
     result = "exit"
+  elsif guess_char.start_with?("solve")
+    solve_array = guess_char.split(" ")
+    solve_array.shift
+    guess_string = solve_array*" "
+    if guess_string == game_word.downcase
+      return "solved"
+    else
+      return "char not found"
+    end
   elsif !valid_chars.include?(guess_char)
     result = "invalid char"
   else
@@ -86,6 +95,8 @@ until play_again == false
   end
   remaining_guesses = how_many_guesses(game_word, game_mode)
   puts "Since this is #{game_mode} mode, you get #{remaining_guesses} guesses. Please guess a valid character, or type exit to leave"
+  puts "You may attempt to guess the full word by typing 'solve' and then your guess."
+  puts "If you need a hint as to which of the 26 letters you should guess, please type 'get a hint'"
   update_game_board(game_word, [])
   over = false
   until remaining_guesses == 0 || over == true
@@ -120,6 +131,10 @@ until play_again == false
     when "invalid char"
       puts "#{guess_character} is not a character. Be grateful I don't take away one of your #{remaining_guesses} guesses for that b.s."
       puts "So far, you have guessed #{all_guesses}"
+    when "solved"
+      over = true
+      puts "#{game_word}"
+      puts "Good job, you won this game, which is for children."
     end
     if over == false
       update_game_board(game_word, all_guesses)
