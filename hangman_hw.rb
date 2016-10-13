@@ -14,11 +14,11 @@ end
 def how_many_guesses(word, mode = "easy")
   case mode
   when "easy"
-    num_guesses = num_unique_chars(word)+15
+    num_guesses = 15
   when "medium"
-    num_guesses = num_unique_chars(word)+9
+    num_guesses = 9
   when "hard"
-    num_guesses = num_unique_chars(word)+6
+    num_guesses = 6
   end
   return num_guesses
 end
@@ -87,7 +87,8 @@ file_words.each do |word|
     hangman_words.push(word.chomp)
   end
 end
-# gets a guess from the user and adds it to the guess_array
+
+# main body of the code. runs the game play until the user doesn't want to play anymore
 play_again = true
 until play_again == false
   all_guesses = []
@@ -96,19 +97,24 @@ until play_again == false
   puts "Welcome to Hangman!"
   puts "What mode would you like to play in? Easy, Medium, or Hard?"
   game_mode = gets.chomp.downcase
+
   if !mode_options.include?(game_mode)
     game_mode = rand_item(mode_options)
     puts "Fine, I'll pick for you. You're playing in #{game_mode} mode."
   end
+
   remaining_guesses = how_many_guesses(game_word, game_mode)
-  puts "Since this is #{game_mode} mode, you get #{remaining_guesses} guesses. Please guess a valid character, or type exit to leave"
+  puts "Since this is #{game_mode} mode, you get #{remaining_guesses} guesses. Please guess a valid character. If you want to start over, type exit."
   puts "You may attempt to guess the full word by typing 'solve' and then your guess."
   puts "If you need a hint as to which of the 26 letters you should guess, please type 'get a hint'"
   update_game_board(game_word, [])
   over = false
   num_hints = 4
+
+  # main body of gameplay. executes a series of results based on what the user guesses
   until remaining_guesses == 0 || over == true
     guess_character = (gets.chomp).downcase
+
     case check_guess(game_word, guess_character, all_guesses)
     when "already guessed"
       puts "Way to go, you already guessed #{guess_character}."
